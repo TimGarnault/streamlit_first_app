@@ -1,0 +1,14 @@
+*.env
+*.csv
+/spikes
+*.md
+*.pptx
+*.docx
+*.xlsx
+*.ini
+*.twbr
+api_key.py
+*.json
+/.streamlit
+railway.ipynb
+*.toml
