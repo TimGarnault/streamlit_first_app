@@ -1,11 +1,9 @@
 import streamlit as st
 import psycopg2
-from dotenv import load_dotenv
 import os
 import pandas as pd
 from datetime import datetime
 import time
-load_dotenv()
 
 # use the full width of the screen
 st.set_page_config(layout="wide")
@@ -27,8 +25,8 @@ st.title("Bitcoin values & articles")
 
 # retrieve bitcoin data from railways hosting PostgreSQL
 def get_api_data():
-    dbconn = os.getenv("DB_CONN")
-    # dbconn = st.secrets["DBCONN"]
+    # dbconn = os.getenv("DB_CONN")
+    dbconn = st.secrets["DB_CONN"]
     conn = psycopg2.connect(dbconn)
     cur = conn.cursor()
     cur.execute('''
@@ -46,8 +44,8 @@ bitcoin_value["date"]=pd.to_datetime(bitcoin_value["date"]).dt.date
 
 # retrieve article data from railways hosting
 def get_article_data():
-    dbconn = os.getenv("DB_CONN")
-    # dbconn = st.secrets["DBCONN"]
+    # dbconn = os.getenv("DB_CONN")
+    dbconn = st.secrets["DB_CONN"]
     conn = psycopg2.connect(dbconn)
     cur = conn.cursor()
     cur.execute('''
