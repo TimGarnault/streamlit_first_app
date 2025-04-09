@@ -12,3 +12,5 @@ api_key.py
 /.streamlit
 railway.ipynb
 *.toml
+package/
+*.zip

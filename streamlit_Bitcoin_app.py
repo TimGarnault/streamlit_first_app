@@ -5,6 +5,11 @@ import pandas as pd
 from datetime import datetime
 import time
 
+# ###
+# def set_theme():
+#     st.session_state.theme = st.session_state.theme_option
+# ###
+
 # use the full width of the screen
 st.set_page_config(layout="wide")
 
@@ -20,7 +25,28 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+# ###
+# if 'dark_mode' not in st.session_state:
+#     st.session_state.dark_mode = False
+
+# def toggle_theme():
+#     st.session_state.dark_mode = not st.session_state.dark_mode
+# ###
+
 st.title("Bitcoin values & articles")
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # retrieve bitcoin data from railways hosting PostgreSQL
@@ -43,18 +69,32 @@ bitcoin_value["date"]=pd.to_datetime(bitcoin_value["date"]).dt.date
 
 
 # retrieve article data from railways hosting
-def get_article_data():
+# def get_article_data():
+#     # dbconn = os.getenv("DB_CONN")
+#     dbconn = st.secrets["DB_CONN"]
+#     conn = psycopg2.connect(dbconn)
+#     cur = conn.cursor()
+#     cur.execute('''
+#     SELECT * FROM article_data ORDER BY date desc;
+#                 ''')
+#     data_article = cur.fetchall()
+#     data_article_df=pd.DataFrame(data_article, columns=["title", "url", "date"])
+#     return data_article_df # use these data outside the function
+# article_value=get_article_data()
+
+# retrieve article data from railways hosting
+def get_utoday_article_data():
     # dbconn = os.getenv("DB_CONN")
     dbconn = st.secrets["DB_CONN"]
     conn = psycopg2.connect(dbconn)
     cur = conn.cursor()
     cur.execute('''
-    SELECT * FROM article_data ORDER BY date desc;
+    SELECT * FROM utoday_article_data ORDER BY date desc;
                 ''')
-    data_article = cur.fetchall()
-    data_article_df=pd.DataFrame(data_article, columns=["title", "url", "date"])
-    return data_article_df # use these data outside the function
-article_value=get_article_data()
+    data_utoday_article = cur.fetchall()
+    data_utoday_article_df=pd.DataFrame(data_utoday_article, columns=["title", "url", "date", "sentiment"])
+    return data_utoday_article_df # use these data outside the function
+utoday_article_value=get_utoday_article_data()
 
 
 #create variable for latest date captured
@@ -107,11 +147,15 @@ filtered_data = bitcoin_value[(bitcoin_value['date'] >= start_date) & (bitcoin_v
 
 
 # adjust article list with url links being clickable
-article_value["url"] = article_value["url"].apply(lambda url: f'<a href="{url}" target="_blank">{url}</a>')
+# article_value["url"] = article_value["url"].apply(lambda url: f'<a href="{url}" target="_blank">{url}</a>')
+
+# adjust article list with url links being clickable
+utoday_article_value["url"] = utoday_article_value["url"].apply(lambda url: f'<a href="{url}" target="_blank">{url}</a>')
+
 
 
 # create multiple tabs to navigate across chart, data and article
-tab1, tab2, tab3 = st.tabs(["📈 Chart", "🗃 Data", "📰 Article"])
+tab1, tab2, tab3 = st.tabs(["📈 Chart", "🗃 Data", "📰 News"])
 with tab1:
     st.subheader("Bitcoin chart")
     st.line_chart(
@@ -125,14 +169,26 @@ with tab2:
     st.subheader("Bitcoin data")
     st.dataframe(filtered_data, height=250, use_container_width=True)
 
+# with tab3:
+#     st.subheader("Bitcoin articles from Financial Times")
+#     # Display DataFrame as HTML with clickable links in Tab 3
+#     # st.markdown(df_articles.to_html(escape=False), unsafe_allow_html=True)
+#         # Add CSS styling to control table height and width
+#     bitcoin_article_table = f"""
+#     <div style="overflow: auto; height: 250px; width: 100%;">
+#         {article_value.to_html(escape=False, index=False)}
+#     </div>
+#     """
+#     st.markdown(bitcoin_article_table, unsafe_allow_html=True)
+
 with tab3:
-    st.subheader("Bitcoin articles from Financial Times")
+    st.subheader("Bitcoin news from u.today")
     # Display DataFrame as HTML with clickable links in Tab 3
     # st.markdown(df_articles.to_html(escape=False), unsafe_allow_html=True)
         # Add CSS styling to control table height and width
-    bitcoin_article_table = f"""
+    bitcoin_utoday_article_table = f"""
     <div style="overflow: auto; height: 250px; width: 100%;">
-        {article_value.to_html(escape=False, index=False)}
+        {utoday_article_value.to_html(escape=False, index=False)}
     </div>
     """
-    st.markdown(bitcoin_article_table, unsafe_allow_html=True)
+    st.markdown(bitcoin_utoday_article_table, unsafe_allow_html=True)
